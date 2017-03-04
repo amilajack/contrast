@@ -1,3 +1,4 @@
+// @flow
 import diff from 'diff';
 import electron, { remote } from 'electron';
 import fs from 'fs';
@@ -30,7 +31,7 @@ function refresh() {
 
 let chunksByLine = [];
 
-function loadDiff(left, right) {
+function loadDiff(left: string, right: string) {
   $('title').text(`${path.basename(left)} - ${path.basename(right)}`);
 
   return Promise.all([
@@ -52,7 +53,11 @@ function loadDiff(left, right) {
         add: isEdit ? false : changes[i].added,
         delete: isEdit ? false : changes[i].removed,
         same: !(changes[i].added || changes[i].removed),
-        action: isEdit ? 'edit' : (changes[i].added ? 'add' : (changes[i].removed ? 'delete' : 'same')),
+        action: isEdit ?
+                  'edit'
+                  : (changes[i].added
+                      ? 'add'
+                      : (changes[i].removed ? 'delete' : 'same')),
         left: changes[i],
         right: isEdit ? changes[i + 1] : changes[i],
         size: isEdit ? Math.max(changes[i].count, changes[i + 1].count) : changes[i].count
@@ -108,7 +113,7 @@ function loadDiff(left, right) {
           leftLines.slice(leftLine, leftLine + (leftSize || 1)),
           rightNumbers.slice((rightSize ? rightLine : rightLine - 1), rightLine + rightSize),
           rightLines.slice((rightSize ? rightLine : rightLine - 1), rightLine + rightSize)
-        ], function () {
+        ], function addClasses() {
           this.addClass(`action-${chunk.action}`)
               .first().addClass('chunk-first').end()
               .last().addClass('chunk-last');
@@ -135,21 +140,20 @@ function loadDiff(left, right) {
   });
 }
 
-function subDiff(left, right) {
-  let change,
-    changes,
-    chunks = [],
-    leftText = '',
-    rightText = '',
-    leftLeaves = left.find('*').filter(function () { return !this.childElementCount; }),
-    rightLeaves = right.find('*').filter(function () { return !this.childElementCount; });
+function subDiff(left: string, right: string) {
+  let change;
+  const chunks = [];
+  let leftText = '';
+  let rightText = '';
+  const leftLeaves = left.find('*').filter(function () { return !this.childElementCount; });
+  const rightLeaves = right.find('*').filter(function () { return !this.childElementCount; });
 
   // extract text content from leaf nodes
   leftLeaves.each(function () { leftText += $(this).html(); });
   rightLeaves.each(function () { rightText += $(this).html(); });
 
   // diff the text (unescaped so we don't split entities)
-  changes = diff.diffChars(unescapeHtml(leftText), unescapeHtml(rightText));
+  const changes = diff.diffChars(unescapeHtml(leftText), unescapeHtml(rightText));
 
   // compose diff chunks and escape text again so it matches the dom
   for (let i = 0; i < changes.length; i++) {
@@ -284,14 +288,14 @@ function drawBridge(chunk, leftOffset, rightOffset, bridge) {
   // crop off the top and push it down using relative positioning
   // we draw the bridge 1px higher and 2px taller because the first and last lines
   // of each chunk are drawn taller (to line-up with 2px ruler on pure adds/deletes)
-  let align = chunk.align,
-    lineHeight = getLineHeight(),
-    leftTop = (align.left.first * lineHeight) + leftOffset - 1,
-    rightTop = (align.right.first * lineHeight) + rightOffset - 1,
-    rightBottom = rightTop + (align.right.size * lineHeight) + 2,
-    leftBottom = leftTop + (align.left.size * lineHeight) + 2,
-    top = Math.min(leftTop, rightTop),
-    height = Math.max(leftBottom, rightBottom) - top;
+  const align = chunk.align;
+  const lineHeight = getLineHeight();
+  const leftTop = (align.left.first * lineHeight) + leftOffset - 1;
+  const rightTop = (align.right.first * lineHeight) + rightOffset - 1;
+  let rightBottom = rightTop + (align.right.size * lineHeight) + 2;
+  let leftBottom = leftTop + (align.left.size * lineHeight) + 2;
+  const top = Math.min(leftTop, rightTop);
+  const height = Math.max(leftBottom, rightBottom) - top;
 
   // if left or right side has zero size, don't allow the points to converge
   // ensure they maintain a distance of 2px so they flow into our 2px ruler
@@ -341,9 +345,9 @@ function updateBridges(leftOffset, rightOffset) {
 }
 
 function getThemeMenu() {
-  let Menu = remote.require('menu')
-    let Item = remote.require('menu-item')
-    let menu = new Menu();
+  const Menu = remote.require('menu');
+  const Item = remote.require('menu-item');
+  const menu = new Menu();
 
   const themes = [
     { label: 'Atom Dark', file: 'themes/atom-dark-syntax.css' },
@@ -368,7 +372,7 @@ function switchTheme(theme) {
   $('link.theme').attr('href', theme);
 }
 
-function getCurrentTheme() {
+function getCurrentTheme(): string {
   return $('link.theme').attr('href');
 }
 
@@ -386,16 +390,16 @@ $(() => {
   // align changes when they scroll to a point 1/3 of the way down the window
   // find the line that corresponds to this point based on line-height
   $(window).on('scroll', () => {
-    let scrollTop = $(window).scrollTop(),
-      lineHeight = getLineHeight(),
-      focalPoint = Math.floor($(window).height() / 3) + scrollTop,
-      focalLine = Math.floor(focalPoint / lineHeight);
+    const scrollTop = $(window).scrollTop();
+    const lineHeight = getLineHeight();
+    const focalPoint = Math.floor($(window).height() / 3) + scrollTop;
+    const focalLine = Math.floor(focalPoint / lineHeight);
 
     // line-up first line in each chunk
-    let chunk = chunksByLine[Math.min(focalLine, chunksByLine.length - 1)],
-      align = chunk.align,
-      leftOffset = (align.river.first - align.left.first) * lineHeight,
-      rightOffset = (align.river.first - align.right.first) * lineHeight;
+    const chunk = chunksByLine[Math.min(focalLine, chunksByLine.length - 1)];
+    const { align } = chunk;
+    let leftOffset = (align.river.first - align.left.first) * lineHeight;
+    let rightOffset = (align.river.first - align.right.first) * lineHeight;
 
     // what percentage of the way through this chunk are we?
     // the smaller side should get edged down by % of it's deficit
@@ -412,9 +416,9 @@ $(() => {
 
   // sync up side-scrolling of left/right file panes
   $('.file .file-contents').on('scroll', (e) => {
-    let master = $(e.currentTarget),
-      let other = master.closest('.file').is('.file-left') ? 'right' : 'left'
-      let slave = $(`.file-${other} .file-contents`)
+    const master = $(e.currentTarget);
+    const other = master.closest('.file').is('.file-left') ? 'right' : 'left';
+    const slave = $(`.file-${other} .file-contents`);
 
     slave.scrollLeft(master.scrollLeft());
   });

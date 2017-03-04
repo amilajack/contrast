@@ -13,9 +13,11 @@
     "generator-star-spacing": "off",
     "import/no-unresolved": ["error", { "ignore": ["electron"] }],
     "import/no-extraneous-dependencies": "off",
+    "new-cap": 0,
     "no-console": 0,
     "no-use-before-define": "off",
     "no-multi-assign": 0,
+    "no-nested-ternary": 0,
     "no-plusplus": 0,
     "promise/param-names": 2,
     "promise/always-return": 2,
@@ -23,8 +25,7 @@
     "promise/no-native": 0,
     "react/jsx-no-bind": "off",
     "react/jsx-filename-extension": ["error", { "extensions": [".js", ".jsx"] }],
-    "react/prefer-stateless-function": "off",
-    "flowtype-errors/show-errors": 0
+    "react/prefer-stateless-function": "off"
   },
   "plugins": [
     "flowtype",

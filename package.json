@@ -1,8 +1,8 @@
 {
   "name": "contrast",
-  "productName": "ElectronReact",
+  "productName": "Contrast",
   "version": "0.10.0",
-  "description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",
+  "description": "A cross-platform diff tool",
   "main": "main.js",
   "scripts": {
     "test": "cross-env NODE_ENV=test BABEL_DISABLE_CACHE=1 jest \"(\\\\|/)test(\\\\|/)(?!.*e2e\\.spec\\.js).+\\.spec\\.js\"",
@@ -157,7 +157,6 @@
     "file-loader": "^0.10.1",
     "flow-bin": "^0.40.0",
     "flow-typed": "^2.0.0",
-    "font-awesome": "^4.7.0",
     "highlights": "^2.1.3",
     "html-webpack-plugin": "^2.28.0",
     "identity-obj-proxy": "^3.0.0",
