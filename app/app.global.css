@@ -1,0 +1,192 @@
+html {
+  height: 100%;
+}
+body {
+  display: flex;
+  min-height: 100%;
+  margin: 0;
+  padding-top: 40px;
+  background: #f7f7f7;
+}
+
+/* toolbar */
+.toolbar {
+  position: fixed;
+  box-sizing: border-box;
+  top: 0;
+  z-index: 100;
+  height: 40px;
+  width: 100%;
+  padding: 0 8px;
+  background-color: #f7f7f7;
+  border-bottom: 1px solid #ddd;
+}
+.toolbar .fa {
+  padding: 8px;
+  font-size: 24px;
+  color: #555;
+}
+.toolbar .fa:hover {
+  color: #000;
+}
+
+/* file containers */
+.file {
+  flex: 1;
+  box-sizing: border-box;
+  padding: 2px 0;
+  font-size: 16px;
+  line-height: 24px;
+  background-color: #fff;
+}
+.file::before {
+  position: fixed;
+  content: ' ';
+  z-index: 5;
+  top: 0;
+  bottom: 0;
+  width: 60px;
+  background-color: #fff;
+}
+.file-left {
+  box-shadow: 1px 0 0 0 rgba(255, 255, 255, .15);
+}
+.file-right {
+  box-shadow: -1px 0 0 0 rgba(255, 255, 255, .15);
+}
+.file .file-offset {
+  position: relative;
+}
+.file .file-contents {
+  overflow-x: scroll;
+}
+.file .file-contents pre {
+  font-family: Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+  display: inline-block;
+  vertical-align: top;
+  min-width: 100%;
+  margin: 0;
+  padding-left: 60px;
+}
+
+/* file lines */
+div.line {
+  box-sizing: border-box;
+  height: 24px;
+  padding: 0 5px;
+}
+div.line.action-delete {
+  background-color: rgba(255, 96, 96, .25);
+}
+div.line.action-add {
+  background-color: rgba(96, 255, 96, .25);
+}
+div.line.action-edit {
+  background-color: rgba(96, 96, 255, .25);
+}
+div.line.chunk-first.action-delete {
+  box-shadow: 0 -1px 0 0 rgba(255, 96, 96, .25);
+}
+div.line.chunk-first.action-add {
+  box-shadow: 0 -1px 0 0 rgba(96, 255, 96, .25);
+}
+div.line.chunk-first.action-edit {
+  box-shadow: 0 -1px 0 0 rgba(96, 96, 255, .25);
+}
+div.line.chunk-last.action-delete {
+  box-shadow: 0 1px 0 0 rgba(255, 96, 96, .25);
+}
+div.line.chunk-last.action-add {
+  box-shadow: 0 1px 0 0 rgba(96, 255, 96, .25);
+}
+div.line.chunk-last.action-edit {
+  box-shadow: 0 1px 0 0 rgba(96, 96, 255, .25);
+}
+div.line.chunk-first.chunk-last.action-delete {
+  box-shadow: 0 -1px 0 0 rgba(255, 96, 96, .25), 0 1px 0 0 rgba(255, 96, 96, .25);
+}
+div.line.chunk-first.chunk-last.action-add {
+  box-shadow: 0 -1px 0 0 rgba(96, 255, 96, .25), 0 1px 0 0 rgba(96, 255, 96, .25);
+}
+div.line.chunk-first.chunk-last.action-edit {
+  box-shadow: 0 -1px 0 0 rgba(96, 96, 255, .25), 0 1px 0 0 rgba(96, 96, 255, .25);
+}
+.file-left div.line.chunk-first.chunk-last.action-add {
+  box-shadow: 0 -1px 0 0 rgba(96, 255, 96, .25), inset 0 1px 0 0 rgba(96, 255, 96, .25);
+  background-color: transparent;
+}
+.file-right div.line.chunk-first.chunk-last.action-delete {
+  box-shadow: 0 1px 0 0 rgba(255, 96, 96, .25), inset 0 -1px 0 0 rgba(255, 96, 96, .25);
+  background-color: transparent;
+}
+
+/* sub-chunks */
+div.line span {
+  display: inline-block;
+}
+.sub-chunk {
+  background-color: rgba(128, 128, 255, .5);
+}
+.file-left .sub-chunk.action-add,
+.file-right .sub-chunk.action-delete {
+  vertical-align: bottom;
+  min-width: 2px;
+  min-height: 24px;
+  margin: 0 -1px;
+}
+
+/* file gutter and line numbers */
+.file-gutter {
+  position: absolute;
+  z-index: 10;
+  min-width: 60px;
+  font-family: Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+  color: #888;
+}
+.file-gutter div.line {
+  padding: 0 10px;
+}
+
+/* river and bridges */
+.river {
+  position: relative;
+  min-width: 5%;
+  margin: 2px 0;
+}
+.river .bridge {
+  position: absolute;
+  width: 100%;
+}
+.bridge.action-delete {
+  fill: rgba(255, 96, 96, .25);
+}
+.bridge.action-add {
+  fill: rgba(96, 255, 96, .25);
+}
+.bridge.action-edit {
+  fill: rgba(96, 96, 255, .25);
+}
+
+/* adjust for dark themes */
+.dark-theme body {
+  background: #111;
+}
+.dark-theme .toolbar {
+  background-color: #292c2f;
+  border-bottom: 1px solid #000;
+}
+.dark-theme .toolbar .fa {
+  color: #aaa;
+}
+.dark-theme .toolbar .fa:hover {
+  color: #fff;
+}
+.dark-theme .file {
+  background-color: #1d1f21;
+}
+.dark-theme .file::before {
+  background-color: #292c2f;
+}
+.dark-theme .file .file-contents {
+  color: #fff;
+}
