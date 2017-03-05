@@ -1,7 +1,8 @@
 Contrast
 ========
 
-This is a work in progress. This is very early in development.
+⚠️ This is a work in progress ⚠️
+
 ![Screenshot Dark](/screenshot-dark.png)
 ![Screenshot Light](/screenshot-light.png)
 
@@ -11,19 +12,6 @@ This is a work in progress. This is very early in development.
 - Sub-line diffing
 - Support for Atom themes
 
-## To Use
-- npm install
-- npm start left-file right-file
-
-## To Use with Git
-```bash
-git config --global diff.tool contrast
-git config --global difftool.contrast.cmd 'export O_PWD=$PWD; npm --prefix=/path/to/contrast start $LOCAL $REMOTE"
-cd /Users/slord/Git/contrast/; npm start $LOCAL $REMOTE'
-git config --global difftool.prompt false
-git difftool
-```
-
 ## Planned Implementations
 - Add persistent config (preferences)
 - Fix growing list of reproducible bugs
@@ -32,3 +20,12 @@ git difftool
 - Change app name in menu
 - Make release build
 - Add ability to edit content
+
+## Development
+```
+git clone https://github.com/amilajack/contrast
+cd contrast
+npm install && cd app && npm install && cd ..
+npm run dev
+```
+:bulb: For further commands, reference the [boilerplate](https://github.com/chentsulin/electron-react-boilerplate) this project was based off of

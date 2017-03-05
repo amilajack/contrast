@@ -9,8 +9,11 @@
     "email": "amilajack@gmail.com",
     "url": "https://github.com/amilajack"
   },
+  "scripts": {
+    "postinstall": "npm rebuild --runtime=electron --target=1.6.1 --disturl=https://atom.io/download/atom-shell --build-from-source"
+  },
   "license": "MIT",
-  "dependencies": {
-    "highlights": "^1.3.1"
+  "devDependencies": {
+    "highlights": "^2.1.3"
   }
 }

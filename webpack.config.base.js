@@ -50,5 +50,5 @@ export default validate({
 
   plugins: [],
 
-  externals: Object.keys(externals || {}).concat(['coffee-script'])
+  externals: Object.keys(externals || {}).concat(['coffee-script', 'oniguruma'])
 });
