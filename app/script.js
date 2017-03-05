@@ -9,10 +9,6 @@ import $ from 'jquery';
 
 window.$ = window.jQuery = $;
 
-// listen for what files to diff
-let left;
-let right;
-
 let chunksByLine = [];
 
 function loadFile(file, container) {
@@ -74,6 +70,10 @@ function applySubDiff(chunks, leafNodes, isLeft) {
     chunk = chunks[i];
     chunkChar = 0;
     applies = (isLeft && !chunk.add) || (!isLeft && !chunk.delete);
+
+    if (!chunk) {
+      throw new Error('Invalid chunk', chunk);
+    }
 
     while (chunkChar < chunk.size) {
       node = $(leafNodes.get(nodeIndex));
@@ -174,6 +174,7 @@ function drawBridge(chunk, leftOffset, rightOffset, bridge) {
   // ensure they maintain a distance of 2px so they flow into our 2px ruler
   leftBottom = Math.max(leftBottom, leftTop + 2);
   rightBottom = Math.max(rightBottom, rightTop + 2);
+
   const points = [
     `0,${leftTop - top}`,
     `100,${rightTop - top}`,
@@ -249,12 +250,12 @@ function getThemeMenu() {
   return menu;
 }
 
-function loadDiff(left: string, right: string) {
-  $('title').text(`Contrast: ${path.basename(left)} - ${path.basename(right)}`);
+function loadDiff(leftFilename: string, rightFilename: string) {
+  $('title').text(`Contrast: ${path.basename(leftFilename)} - ${path.basename(rightFilename)}`);
 
   return Promise.all([
-    loadFile(left, $('.file-left')),
-    loadFile(right, $('.file-right'))
+    loadFile(leftFilename, $('.file-left')),
+    loadFile(rightFilename, $('.file-right'))
   ])
   .then((values) => {
     let i;
@@ -295,7 +296,6 @@ function loadDiff(left: string, right: string) {
     //    trying to align when scrolled to the top or bottom of the chunk
     //  - identify changed lines with action-add/edit/delete
     //  - draw connecting svg 'bridges' between the left and right side
-    let chunk = null;
     let chunkSize = 0;
     let riverLine = 0;
     const leftNumbers = $('.file-left .file-gutter div.line');
@@ -307,8 +307,7 @@ function loadDiff(left: string, right: string) {
     let rightLine = 0;
     let rightSize = 0;
 
-    for (i = 0; i < chunks.length; i++) {
-      chunk = chunks[i];
+    chunks.forEach((chunk) => {
       leftSize = chunk.add ? 0 : chunk.left.count;
       rightSize = chunk.delete ? 0 : chunk.right.count;
       chunkSize = chunk.size;
@@ -332,9 +331,12 @@ function loadDiff(left: string, right: string) {
           rightNumbers.slice((rightSize ? rightLine : rightLine - 1), rightLine + rightSize),
           rightLines.slice((rightSize ? rightLine : rightLine - 1), rightLine + rightSize)
         ], function addClasses() {
-          this.addClass(`action-${chunk.action}`)
-              .first().addClass('chunk-first').end()
-              .last().addClass('chunk-last');
+          this
+            .addClass(`action-${chunk.action}`)
+            .first()
+            .addClass('chunk-first')
+            .end()
+            .last().addClass('chunk-last');
         });
 
         drawBridge(chunk, 0, 0);
@@ -351,7 +353,7 @@ function loadDiff(left: string, right: string) {
       leftLine += leftSize;
       rightLine += rightSize;
       riverLine += chunkSize;
-    }
+    });
 
     // river should be tall enough to scroll through tallest chunks
     $('.river').css('min-height', `${getLineHeight() * riverLine}px`);
@@ -362,7 +364,6 @@ function refresh() {
   chunksByLine = [];
   lineHeight = null;
   $('.file-contents, .file-gutter, .river').html('');
-  loadDiff(left, right);
 }
 
 $(() => {

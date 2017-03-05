@@ -13,6 +13,7 @@ Contrast
 - Support for Atom themes
 
 ## Planned Implementations
+- Migrate to react
 - Add persistent config (preferences)
 - Fix growing list of reproducible bugs
 - Clean-up code (start using modules)
