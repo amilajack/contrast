@@ -1,6 +1,6 @@
 // @flow
-import diff from 'diff';
-import electron, { remote } from 'electron';
+import { diffLines } from 'diff';
+import { remote } from 'electron';
 import fs from 'fs';
 import highlights from 'highlights';
 import path from 'path';
@@ -13,23 +13,31 @@ window.$ = window.jQuery = $;
 let left;
 let right;
 
-electron.ipcRenderer.on('args', (event, args) => {
-  if (args[1] && args[2]) {
-    left = args[1];
-    right = args[2];
-    console.log(left, right);
-    loadDiff('/Users/amila/.yarnrc', '/Users/amila/.yarnrc');
-  }
-});
-
-function refresh() {
-  chunksByLine = [];
-  lineHeight = null;
-  $('.file-contents, .file-gutter, .river').html('');
-  loadDiff(left, right);
-}
-
 let chunksByLine = [];
+
+function loadFile(file, container) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(file, 'utf8', (error, data) => {
+      if (error) reject(error);
+
+      // syntax highlight
+      let html = new highlights().highlightSync({
+        fileContents: data,
+        scopeName: 'source.js'
+      });
+      container.find('.file-contents').html(html);
+
+      // render line numbers
+      html = '';
+      for (let i = 1; i <= container.find('div.line').length; i++) {
+        html += `<div class="line">${i}</div>`;
+      }
+      container.find('.file-gutter').html(html);
+
+      resolve(data);
+    });
+  });
+}
 
 function loadDiff(left: string, right: string) {
   $('title').text(`${path.basename(left)} - ${path.basename(right)}`);
@@ -42,7 +50,7 @@ function loadDiff(left: string, right: string) {
     let i;
     let isEdit = false;
     const chunks = [];
-    const changes = diff.diffLines(values[0], values[1]);
+    const changes = diffLines(values[0], values[1]);
 
     // make a pass through changes to pair up edits
     for (i = 0; i < changes.length; i++) {
@@ -248,32 +256,6 @@ function getLineHeight() {
   return lineHeight;
 }
 
-function loadFile(file, container) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(file, 'utf8', (error, data) => {
-      if (error) reject();
-
-      console.log(data.toString());
-
-      // syntax highlight
-      let html = new highlights().highlightSync({
-        fileContents: data,
-        scopeName: 'source.js'
-      });
-      container.find('.file-contents').html(html);
-
-      // render line numbers
-      html = '';
-      for (let i = 1; i <= container.find('div.line').length; i++) {
-        html += `<div class="line">${i}</div>`;
-      }
-      container.find('.file-gutter').html(html);
-
-      resolve(data);
-    });
-  });
-}
-
 function drawBridge(chunk, leftOffset, rightOffset, bridge) {
   // if bridge is given we are re-drawing an existing bridge
   // otherwise we need to make the bridge
@@ -288,7 +270,7 @@ function drawBridge(chunk, leftOffset, rightOffset, bridge) {
   // crop off the top and push it down using relative positioning
   // we draw the bridge 1px higher and 2px taller because the first and last lines
   // of each chunk are drawn taller (to line-up with 2px ruler on pure adds/deletes)
-  const align = chunk.align;
+  const { align } = chunk;
   const lineHeight = getLineHeight();
   const leftTop = (align.left.first * lineHeight) + leftOffset - 1;
   const rightTop = (align.right.first * lineHeight) + rightOffset - 1;
@@ -423,3 +405,15 @@ $(() => {
     slave.scrollLeft(master.scrollLeft());
   });
 });
+
+loadDiff(
+  '/Users/amila/Documents/Projects/contrast/sample-left.js',
+  '/Users/amila/Documents/Projects/contrast/sample-right.js'
+);
+
+function refresh() {
+  chunksByLine = [];
+  lineHeight = null;
+  $('.file-contents, .file-gutter, .river').html('');
+  loadDiff(left, right);
+}

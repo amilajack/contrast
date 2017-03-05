@@ -27,6 +27,11 @@ export default validate({
     }]
   },
 
+  node: {
+    __filename: true,
+    __dirname: true
+  },
+
   output: {
     path: path.join(__dirname, 'app'),
     filename: 'bundle.js',
