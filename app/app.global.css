@@ -1,3 +1,6 @@
+@import "~font-awesome/css/font-awesome.css";
+@import "./themes/atom-dark-syntax.css";
+
 html {
   height: 100%;
 }
