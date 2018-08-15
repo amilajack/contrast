@@ -1,6 +1,8 @@
 Contrast
 ========
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/amilajack/contrast.svg)](https://greenkeeper.io/)
+
 ⚠️ This is a work in progress ⚠️
 
 ![Screenshot Dark](/screenshot-dark.png)
